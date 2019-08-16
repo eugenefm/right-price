@@ -1,0 +1,70 @@
+
+// ** USER ROUTES **
+
+// @route   POST api/users
+// @desc    Create User
+// @access  Public
+
+// @route   POST api/users/login
+// @desc    Login User
+// @access  Public
+
+// @route   POST api/users/logout
+// @desc    Logout User
+// @access  Private
+
+// @route   GET api/users/:id
+// @desc    Read User by ID
+// @access  Private
+
+// @route   PATCH api/users/:id
+// @desc    Update Users by ID
+// @access  Private
+
+// @route   DEL api/users/:id
+// @desc    Delete Users by ID
+// @access  Private
+
+
+
+// ** CONTEST ROUTES **
+
+POST Create Contest
+// @route   POST api/contests
+// @desc    Create Contest
+// @access  Private
+
+// @route   GET api/contests
+// @desc    Read All Contests
+// @access  Public
+
+// @route   GET api/contests/:id
+// @desc    Read Contest by ID
+// @access  Public
+
+// @route   PATCH api/contests/:id
+// @desc    Update Contest by ID
+// @access  Private
+
+// @route   DEL api/contests/:id
+// @desc    Delete Contest by ID
+// @access  Private
+
+
+// ** PICKS ROUTES **
+
+// @route   POST api/picks
+// @desc    Create Pick
+// @access  Private
+
+// @route   GET api/picks/:id
+// @desc    Read Pick by ID
+// @access  Private
+
+// @route   PATCH api/picks/:id
+// @desc    Update Pick by ID
+// @access  Private
+
+// @route   DEL api/picks/:id
+// @desc    Delete Pick by ID
+// @access  Private

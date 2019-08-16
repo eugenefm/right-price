@@ -1,0 +1,27 @@
+users
+  -email
+  -password
+  -tokens
+  -avatar
+  -contest membership
+  -contest admin
+  -picks
+
+contests
+  -name
+  -start date
+  -end date
+  -security/stock
+    --name
+    --ticker
+    --recent price
+    --last updated
+  -public/private
+  -password
+  -admin
+  -members
+
+picks
+  -price
+  -user
+  -contest
