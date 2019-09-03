@@ -1,0 +1,4 @@
+// picks
+// -price
+// -user
+// -contest
