@@ -32,12 +32,14 @@ const ContestSchema = new Schema({
     type: String,
     required: true
   },
-  picks: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'picks'
-    }
-  ],
+  private: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  password: {
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now
@@ -49,7 +51,13 @@ const ContestSchema = new Schema({
   endDate: {
     type: Date,
     required: true
-  }
+  },
+  picks: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'picks'
+    }
+  ]
 });
 
 module.exports = Contest = mongoose.model('contest', ContestSchema);
