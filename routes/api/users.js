@@ -1,4 +1,5 @@
 const express = require('express');
+const auth = require('../../middleware/auth');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
@@ -75,5 +76,47 @@ router.post(
     }
   }
 );
+
+// @route   GET api/users/me
+// @desc    Get current users profile
+// @access  Private
+
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user.id }).select('-password');
+
+    if (!user) {
+      return res.status(400).json({ msg: 'No user was found' });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.patch('/me', [auth, [check('email', 'Please include a valid email.').isEmail()]], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { name, email, displayName } = req.body;
+
+  const userFields = {};
+  if (name) userFields.name = name;
+  if (email) userFields.email = email;
+  if (displayName) userFields.displayName = displayName;
+
+  try {
+    const user = await User.findOneAndUpdate({ _id: req.user.id }, { $set: userFields }, { new: true }).select(
+      '-password'
+    );
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
