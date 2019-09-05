@@ -15,6 +15,10 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  displayName: {
+    type: String,
+    required: true
+  },
   email: {
     type: String,
     required: true,
@@ -31,6 +35,11 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now
   }
+});
+
+UserSchema.virtual('firstName').get(() => {
+  const split = this.name.split(' ');
+  return split[0];
 });
 
 module.exports = User = mongoose.model('user', UserSchema);

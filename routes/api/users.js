@@ -42,10 +42,14 @@ router.post(
         d: 'mm'
       });
 
+      let displayName = name.split(' ');
+      displayName = displayName[0] + ' ' + displayName[1].substring(0, 1).toUpperCase() + '.';
+
       user = new User({
         name,
         email,
         avatar,
+        displayName,
         password
       });
 
