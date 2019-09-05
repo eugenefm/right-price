@@ -95,6 +95,10 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// @route   PATCH api/users/me
+// @desc    Update current users profile
+// @access  Private
+
 router.patch('/me', [auth, [check('email', 'Please include a valid email.').isEmail()]], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -118,5 +122,62 @@ router.patch('/me', [auth, [check('email', 'Please include a valid email.').isEm
     res.status(500).send('Server Error');
   }
 });
+
+// @route   PATCH api/users/me/password
+// @desc    Update current user's password
+// @access  Private
+
+router.patch(
+  '/me/password',
+  [
+    auth,
+    [
+      check('newPassword', 'New password is required.').exists(),
+      check('oldPassword', 'Current password is required.').exists()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { oldPassword, newPassword } = req.body;
+
+    const salt = await bcrypt.genSalt(10);
+
+    const password = await bcrypt.hash(newPassword, salt);
+
+    try {
+      const user = await User.findById(req.user.id);
+
+      if (!user) {
+        return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
+      }
+
+      const updatedUser = await User.findOneAndUpdate({ _id: req.user.id }, { $set: { password } }, { new: true });
+
+      const payload = {
+        user: {
+          id: user._id
+        }
+      };
+
+      jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 module.exports = router;
