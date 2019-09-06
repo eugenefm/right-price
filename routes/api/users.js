@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
+const Pick = require('../../models/Pick');
+const Contest = require('../../models/Contest');
 
 // @route   POST api/users
 // @desc    Register user
@@ -22,7 +24,6 @@ router.post(
     check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
   ],
   async (req, res) => {
-    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -177,9 +178,9 @@ router.patch(
   }
 );
 
-router.delete('/', auth, async (req, res) => {
+router.delete('/me', auth, async (req, res) => {
   try {
-    await Pick.deleteMany({ user: req.user.id });
+    // await Pick.deleteMany({ user: req.user.id });
     await User.findOneAndRemove({ _id: req.user.id });
     res.json({ msg: 'User deleted.' });
   } catch (err) {

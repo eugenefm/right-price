@@ -20,10 +20,6 @@ const ContestSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
-  text: {
-    type: String,
-    required: true
-  },
   name: {
     type: String,
     required: true
@@ -34,7 +30,6 @@ const ContestSchema = new Schema({
   },
   private: {
     type: Boolean,
-    required: true,
     default: false
   },
   password: {
