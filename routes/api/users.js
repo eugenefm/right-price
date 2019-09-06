@@ -143,14 +143,11 @@ router.patch(
     }
 
     const { oldPassword, newPassword } = req.body;
-
     const salt = await bcrypt.genSalt(10);
-
     const password = await bcrypt.hash(newPassword, salt);
 
     try {
       const user = await User.findById(req.user.id);
-
       if (!user) {
         return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
@@ -179,5 +176,16 @@ router.patch(
     }
   }
 );
+
+router.delete('/', auth, async (req, res) => {
+  try {
+    await Pick.deleteMany({ user: req.user.id });
+    await User.findOneAndRemove({ _id: req.user.id });
+    res.json({ msg: 'User deleted.' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
