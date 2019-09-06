@@ -26,12 +26,9 @@ router.post(
         .not()
         .isEmpty(),
       check('startDate', 'Contest start date must be after today.').isAfter(new Date().toDateString()),
-      check('endDate').custom((value, { req }) => {
-        if (new Date(value) <= new Date(req.body.startDate)) {
-          throw new Error('End date of contest must be valid and after start date.');
-        }
-        return true;
-      })
+      check('endDate', 'End date of contest must be valid and after start date.').custom(
+        (value, { req }) => new Date(value) > new Date(req.body.startDate)
+      )
     ]
   ],
   async (req, res) => {
@@ -55,6 +52,60 @@ router.post(
         newContest.private = true;
       }
       const contest = await newContest.save();
+      res.json(contest);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// @route   PATCH api/contests
+// @desc    Update a contest
+// @access  Private
+
+router.patch(
+  '/:contest_id',
+  [
+    auth,
+    [
+      check('name', 'Contest name is required')
+        .optional()
+        .not()
+        .isEmpty(),
+      check('ticker', 'You must provide a valid stock ticker.')
+        .optional()
+        .not()
+        .isEmpty(),
+      check('startDate', 'Contest start date must be after today.')
+        .optional()
+        .isAfter(new Date().toDateString()),
+      check('endDate', 'End date of contest must be valid and after start date.')
+        .optional()
+        .custom((value, { req }) => new Date(value) > new Date(req.body.startDate))
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const updates = Object.keys(req.body);
+    try {
+      const contest = await Contest.findOne({ _id: req.params.contest_id });
+      if (!contest) return res.status(400).json({ msg: 'Contest not found.' });
+
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+      }
+
+      updates.forEach(update => {
+        contest[update] = req.body[update];
+      });
+
+      await contest.save();
       res.json(contest);
     } catch (err) {
       console.error(err.message);
