@@ -60,6 +60,22 @@ router.post(
   }
 );
 
+// @route   GET api/contests
+// @desc    Get all contests
+// @access  Public
+router.get('/', async (req, res) => {
+  try {
+    const contests = await Contest.find()
+      .populate('admin', ['displayName'])
+      .sort({ endDate: -1 })
+      .select('-password');
+    res.json(contests);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   PATCH api/contests
 // @desc    Update a contest
 // @access  Private

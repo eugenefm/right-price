@@ -18,7 +18,7 @@ const Schema = mongoose.Schema;
 const ContestSchema = new Schema({
   admin: {
     type: Schema.Types.ObjectId,
-    ref: 'users'
+    ref: 'user'
   },
   name: {
     type: String,
