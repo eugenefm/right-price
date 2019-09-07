@@ -76,7 +76,23 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   PATCH api/contests
+// @route   GET api/contests/:contest_id
+// @desc    Get one contest by ID
+// @access  Public
+router.get('/:contest_id', async (req, res) => {
+  try {
+    const contest = await Contest.findById(req.params.contest_id)
+      .select('-password')
+      .populate('admin', ['displayName', 'avatar']);
+    if (!contest) return res.status(400).json({ msg: 'Contest not found.' });
+    res.json(contest);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   PATCH api/contests/:contest_id
 // @desc    Update a contest
 // @access  Private
 
