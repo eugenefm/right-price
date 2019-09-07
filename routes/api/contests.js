@@ -94,6 +94,9 @@ router.patch(
     try {
       const contest = await Contest.findOne({ _id: req.params.contest_id });
       if (!contest) return res.status(400).json({ msg: 'Contest not found.' });
+      if (req.user.id !== contest.admin) {
+        return res.status(400).json({ msg: 'You are not authorized to edit this contest.' });
+      }
 
       if (req.body.password) {
         const salt = await bcrypt.genSalt(10);
