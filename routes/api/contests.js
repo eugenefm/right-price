@@ -83,7 +83,15 @@ router.get('/:contest_id', async (req, res) => {
   try {
     const contest = await Contest.findById(req.params.contest_id)
       .select('-password')
-      .populate('admin', ['displayName', 'avatar']);
+      .populate('admin', ['displayName', 'avatar'])
+      .populate({
+        path: 'picks',
+        select: { user: 1, price: 1 },
+        populate: {
+          path: 'user',
+          select: { displayName: 1 }
+        }
+      });
     if (!contest) return res.status(400).json({ msg: 'Contest not found.' });
     res.json(contest);
   } catch (err) {

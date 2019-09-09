@@ -8,11 +8,13 @@ const Schema = mongoose.Schema;
 const PickSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'users'
+    ref: 'user',
+    required: true
   },
   contest: {
     type: Schema.Types.ObjectId,
-    ref: 'contests'
+    ref: 'contest',
+    required: true
   },
   price: {
     type: Number,

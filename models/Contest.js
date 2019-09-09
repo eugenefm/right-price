@@ -15,6 +15,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const Pick = require('./Pick');
+
 const ContestSchema = new Schema({
   admin: {
     type: Schema.Types.ObjectId,
@@ -46,13 +48,16 @@ const ContestSchema = new Schema({
   endDate: {
     type: Date,
     required: true
-  },
-  picks: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'picks'
-    }
-  ]
+  }
 });
+
+ContestSchema.virtual('picks', {
+  ref: 'pick',
+  localField: '_id',
+  foreignField: 'contest'
+});
+
+ContestSchema.set('toObject', { virtuals: true });
+ContestSchema.set('toJSON', { virtuals: true });
 
 module.exports = Contest = mongoose.model('contest', ContestSchema);
