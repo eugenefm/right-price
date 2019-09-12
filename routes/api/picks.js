@@ -14,7 +14,7 @@ router.post(
   [
     auth,
     [
-      check('price', 'Please enter a valid posible price.')
+      check('price', 'Please enter a valid possible price.')
         .isFloat({ min: 0 })
         .not()
         .isEmpty()
@@ -47,5 +47,16 @@ router.post(
     }
   }
 );
+
+router.delete('/:pick_id', auth, async (req, res) => {
+  try {
+    const pick = await Pick.findOneAndRemove({ _id: req.params.pick_id, user: req.user.id });
+    if (!pick) return res.status(400).json({ msg: 'Permission Denied.' });
+    res.json({ msg: 'Contest deleted.' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
