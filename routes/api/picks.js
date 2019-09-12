@@ -26,8 +26,14 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const { price, contest } = req.body;
-      let pick = await Pick.findOne({ user: req.user.id, contest });
+      const { price, contestId } = req.body;
+      const pick = await Pick.findOne({ user: req.user.id, contest: contestId });
+      const contest = await Contest.findOne({ _id: contestId });
+      console.log(contest.startDate);
+      console.log(new Date());
+      if (new Date() > contest.startDate) {
+        return res.status(400).json({ msg: 'Cannot add or modify a pick after a contest has started.' });
+      }
       if (pick) {
         pick.price = price;
         await pick.save();
@@ -39,7 +45,7 @@ router.post(
         user: req.user.id
       });
 
-      pick = await newPick.save();
+      await newPick.save();
       res.json(newPick);
     } catch (err) {
       console.error(err.message);
